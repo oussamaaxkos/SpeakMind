@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #conversation {
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        #input-area {
+            display: flex;
+            gap: 10px;
+        }
+        #text-input {
+            flex-grow: 1;
+            padding: 8px;
+        }
+        button {
+            padding: 8px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Voice Assistant</h1>
+    <div id="conversation"></div>
+    <div id="input-area">
+        <input type="text" id="text-input" placeholder="Type your command...">
+        <button id="send-button">Send</button>
+    </div>
+
+    <script>
+        const conversation = document.getElementById('conversation');
+        const textInput = document.getElementById('text-input');
+        const sendButton = document.getElementById('send-button');
+        
+        function addMessage(sender, message) {
+            const msgDiv = document.createElement('div');
+            msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            conversation.appendChild(msgDiv);
+            conversation.scrollTop = conversation.scrollHeight;
+        }
+        
+        sendButton.addEventListener('click', async () => {
+            const text = textInput.value.trim();
+            if (text) {
+                addMessage('You', text);
+                textInput.value = '';
+                
+                const response = await fetch('/process_command', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text })
+                });
+                
+                const data = await response.json();
+                addMessage('Assistant', data.response);
+            }
+        });
+        
+        textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
