@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, reques
+from flask import Flask, render_template, jsonify, request
 import pyttsx3
 import webbrowser
 import subprocess
